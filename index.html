@@ -58,6 +58,11 @@
       margin-top: 10px;
       font-size: 18px;
     }
+    .timer {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #ffc0be;
+    }
   </style>
 </head>
 <body>
@@ -69,13 +74,17 @@
     <button onclick="checkOrder()">Check Order</button>
   </div>
   <div class="message" id="message">Good luck!</div>
+  <div class="timer" id="timer">Time: 0s</div>
 
   <script>
     const target = ['8', '0', '1', '2', '8', '7', '8', '6'];
     let current = [];
+    let timerInterval;
+    let startTime;
 
     const board = document.getElementById('board');
     const message = document.getElementById('message');
+    const timerDisplay = document.getElementById('timer');
 
     function shuffle(array) {
       const copy = [...array];
@@ -103,11 +112,15 @@
       current = shuffle(target);
       renderBoard();
       message.textContent = 'Tiles shuffled!';
+      resetTimer();
     }
 
     function checkOrder() {
       const isCorrect = current.join('') === target.join('');
       message.textContent = isCorrect ? '🎉 You did it! Student ID matched!' : '❌ Not quite. Try again!';
+      if (isCorrect) {
+        clearInterval(timerInterval);
+      }
     }
 
     function addDragAndDrop() {
@@ -129,6 +142,15 @@
           renderBoard();
         });
       });
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      startTime = Date.now();
+      timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        timerDisplay.textContent = `Time: ${elapsed}s`;
+      }, 1000);
     }
 
     shuffleTiles();
