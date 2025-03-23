@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brittany's Number Puzzle</title>
+  <style>
+    body {
+      background-color: #000000;
+      color: #ffebe7;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      color: #ff82a9;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 60px);
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .tile {
+      width: 60px;
+      height: 60px;
+      background-color: #7f95d1;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background-color 0.2s;
+    }
+    .tile:hover {
+      background-color: #ff82a9;
+    }
+    .controls button {
+      margin: 5px;
+      padding: 10px 20px;
+      background-color: #ffc0be;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .controls button:hover {
+      background-color: #ff82a9;
+    }
+    .message {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Brittany's Number Puzzle</h1>
+  <p>Arrange the numbers to match: <strong>80128786</strong></p>
+  <div class="board" id="board"></div>
+  <div class="controls">
+    <button onclick="shuffleTiles()">Shuffle</button>
+    <button onclick="checkOrder()">Check Order</button>
+  </div>
+  <div class="message" id="message">Good luck!</div>
+
+  <script>
+    const target = ['8', '0', '1', '2', '8', '7', '8', '6'];
+    let current = [];
+
+    const board = document.getElementById('board');
+    const message = document.getElementById('message');
+
+    function shuffle(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function renderBoard() {
+      board.innerHTML = '';
+      current.forEach((num, index) => {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.draggable = true;
+        tile.textContent = num;
+        tile.dataset.index = index;
+        board.appendChild(tile);
+      });
+      addDragAndDrop();
+    }
+
+    function shuffleTiles() {
+      current = shuffle(target);
+      renderBoard();
+      message.textContent = 'Tiles shuffled!';
+    }
+
+    function checkOrder() {
+      const isCorrect = current.join('') === target.join('');
+      message.textContent = isCorrect ? '🎉 You did it! Student ID matched!' : '❌ Not quite. Try again!';
+    }
+
+    function addDragAndDrop() {
+      const tiles = document.querySelectorAll('.tile');
+      let draggedIndex = null;
+
+      tiles.forEach(tile => {
+        tile.addEventListener('dragstart', e => {
+          draggedIndex = +e.target.dataset.index;
+        });
+
+        tile.addEventListener('dragover', e => {
+          e.preventDefault();
+        });
+
+        tile.addEventListener('drop', e => {
+          const targetIndex = +e.target.dataset.index;
+          [current[draggedIndex], current[targetIndex]] = [current[targetIndex], current[draggedIndex]];
+          renderBoard();
+        });
+      });
+    }
+
+    shuffleTiles();
+  </script>
+</body>
+</html>
